@@ -127,6 +127,13 @@ This Bash script automates the creation of VPC networks, subnets, firewall rules
 - Verify network and firewall rules are created if deployment fails
 - Try manually connecting to printed public IP to test VM accessibility
 
+# When you are done - Don't let the bills pile up
+just do that.
+```
+chmod +x remove-existing-pan-in-gcp
+./remove-existing-pan-in-gcp
+```
+
 Let me know if any sections need additional detail or clarification!
 
 ## Installing Gcloud
