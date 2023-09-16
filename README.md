@@ -5,6 +5,9 @@ By Mike Wissa
 Working for Fortinet, the gcp gcloud deployment manager is available in the github repo; however, the Palo Alto Networks PAN VM-Series doesn't publish the gcloud deployment; however, this deployment is available from within GCP deployment manager. This was my attempt to simplify the process of launching the PAN vm-series and provide the same ease of use experience that is baked into Fortinet.
 You're welcome Palo Alto Networks.
 
+This script is built around uses gcloud deployment-manager
+gcloud deployment-manager deployments create vm-name --config=pan-vm-series-bundleX-check for your self.
+
 # VPC Network Creation Script
 
 This Bash script automates the creation of VPC networks, subnets, firewall rules, and VM instance deployment on Google Cloud.
