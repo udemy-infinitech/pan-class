@@ -1,0 +1,38 @@
+resources:
+- name: DEVICE_NAME
+  properties:
+    canIpForward: true
+    disks:
+    - autoDelete: true
+      boot: true
+      deviceName: DEVICE_NAME_boot_disk_0
+      initializeParams:
+        diskSizeGb: 60
+        diskType: https://www.googleapis.com/compute/v1/projects/REPLACE_PROJECT/zones/REPLACE_ZONE/diskTypes/pd-ssd
+        sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/SRC_IMAGE
+      type: PERSISTENT
+    machineType: https://www.googleapis.com/compute/v1/projects/REPLACE_PROJECT/zones/REPLACE_ZONE/machineTypes/e2-medium
+    metadata:
+      items:
+      - key: dhcp-accept-server-domain
+        value: 'yes'
+      - key: dhcp-accept-server-hostname
+        value: 'yes'
+      - key: serial-port-enable
+        value: 'true'
+    networkInterfaces:
+    - accessConfigs: []
+      network: https://www.googleapis.com/compute/v1/projects/REPLACE_PROJECT/global/networks/REPLACE_NETWORK_INTERNAL
+      subnetwork: https://www.googleapis.com/compute/v1/projects/REPLACE_PROJECT/regions/REPLACE_REGION/subnetworks/REPLACE_NETWORK_INTERNAL
+    serviceAccounts:
+    - email: default
+      scopes:
+      - https://www.googleapis.com/auth/compute.readonly
+      - https://www.googleapis.com/auth/cloud.useraccounts.readonly
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+    tags:
+      items: []
+    zone: REPLACE_ZONE
+  type: compute.v1.instance
