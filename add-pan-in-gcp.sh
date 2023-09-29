@@ -167,7 +167,7 @@ if [[ ${#pub_files[@]} -eq 0 ]]; then
         ssh-keygen -t rsa -f id_rsa
 
         # Set keyfile_path to the newly created private key
-        keyfile_path="./id_rsa"
+        PUB_KEY=$(cat "./id_rsa.pub" | sed 's/^ssh-rsa //')
     else
         echo "Exiting since no key was provided."
         exit 1
