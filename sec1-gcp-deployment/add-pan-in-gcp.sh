@@ -261,4 +261,49 @@ sleep 360
 sudo -u nobody ssh -i id_rsa -o StrictHostKeyChecking=no -o StrictHostKeyChecking=accept-new -o HostKeyAlgorithms=ssh-rsa,ssh-ed25519 admin@${PUBLIC_IP}
 # Connect to the server using the local keyfile
 
+read -p "What do you want the ubuntu client name to be? " DEVICE_NAME
+DEVICE_NAME="${DEVICE_NAME,,}"
 
+FILTER="2204"
+
+IMAGES=$(gcloud compute images list --project=ubuntu-os-cloud --filter="${FILTER}" --format="value(NAME)")
+
+# Check if IMAGES is empty
+if [[ -z "$IMAGES" ]]; then
+    echo "No images found for Bundle $BUNDLE_CHOICE."
+    exit 1
+fi
+
+# Create a menu for the user to select from
+PS3='Please select an image: '
+select IMAGE in $IMAGES; do
+    if [[ -n $IMAGE ]]; then
+        echo "You selected: $IMAGE"
+        # You can now use $IMAGE variable for your further tasks
+        break
+    else
+        echo "Invalid selection"
+    fi
+done
+
+cp expanded-config-client.yaml expanded-deployed-config-client.yaml
+sed -i "s/DEVICE_NAME/${DEVICE_NAME}/g" expanded-deployed-config-client.yaml
+sed -i "s/SRC_IMAGE/${IMAGE}/g" expanded-deployed-config-client.yaml
+sed -i "s/REPLACE_PROJECT/${project_id}/g" expanded-deployed-config-client.yaml
+sed -i "s/REPLACE_REGION/${region}/g" expanded-deployed-config-client.yaml
+sed -i "s/REPLACE_ZONE/${ZONE}/g" expanded-deployed-config-client.yaml
+sed -i "s/REPLACE_NETWORK_INTERNAL/${NETWORKS["internal"]}/g expanded-deployed-config-client.yaml
+
+read -p "What do you want your deployment name for the client to be? " DEPLOYMENT_NAME
+DEPLOYMENT_NAME="${DEPLOYMENT_NAME,,}"
+# Check if the deployment exists
+gcloud deployment-manager deployments describe $DEPLOYMENT_NAME
+
+# $? is a special variable that holds the exit status of the last command executed
+if [ $? -eq 0 ]; then
+    # Deployment exists, so update it
+    echo "Deployment exists. Updating..."
+    gcloud deployment-manager deployments update $DEPLOYMENT_NAME --config=expanded-deployed-config-client.yaml
+else
+    gcloud deployment-manager deployments create $DEPLOYMENT_NAME --config=expanded-deployed-config-client.yaml
+fi
