@@ -173,7 +173,7 @@ if [[ ${#pub_files[@]} -eq 0 ]]; then
         exit 1
     fi
 else
-    # Use the first found .pub file's corresponding private key
+    # Use the local pub key
     PUB_KEY=$(cat "./id_rsa.pub" | sed 's/^ssh-rsa //')
 fi
 
