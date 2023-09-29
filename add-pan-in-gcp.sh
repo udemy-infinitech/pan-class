@@ -257,9 +257,8 @@ while true; do
 done
 echo "Waiting for 5 minutes until the instance is fully provisioned, you can go grab a coffee, time for a break"
 sleep 360
-ssh-keygen -f ~/.ssh/known_hosts -R "${PUBLIC_IP}"
 
-
+sudo -u nobody ssh -i id_rsa -o StrictHostKeyChecking=no -o StrictHostKeyChecking=accept-new -o HostKeyAlgorithms=ssh-rsa,ssh-ed25519 admin@${PUBLIC_IP}
 # Connect to the server using the local keyfile
-ssh -i ./id_rsa -o StrictHostKeyChecking=no -o StrictHostKeyChecking=accept-new -o HostKeyAlgorithms=ssh-rsa,ssh-ed25519 admin@${PUBLIC_IP}
+
 
