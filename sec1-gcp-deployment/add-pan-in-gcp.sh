@@ -295,4 +295,10 @@ sed -i "s/REPLACE_ZONE/${ZONE}/g" expanded-deployed-config-client.yaml
 sed -i "s/REPLACE_NETWORK_INTERNAL/${NETWORKS["internal"]}/g" expanded-deployed-config-client.yaml
 
 
-gcloud deployment-manager deployments create ${DEPLOYMENT_NAME}_ubuntu --config=expanded-deployed-config-client.yaml
+gcloud deployment-manager deployments create ${DEPLOYMENT_NAME}-ubuntu --config=expanded-deployed-config-client.yaml
+
+ gcloud compute routes create internal_default_route \
+    --network=${NETWORKS["internal"]} \
+    --destination-range=0.0.0.0/0 \
+    --next-hop-instance=panfw1 \
+    --next-hop-instance-zone=${ZONE}
