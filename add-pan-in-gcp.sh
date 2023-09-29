@@ -1,5 +1,4 @@
 #!/bin/bash
-# Create by Mike Wissa - for fun
 # Function to display the spinner
 touch error_output.log
 error_output="error_output.log"
