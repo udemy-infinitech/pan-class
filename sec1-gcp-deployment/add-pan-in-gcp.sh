@@ -294,16 +294,5 @@ sed -i "s/REPLACE_REGION/${region}/g" expanded-deployed-config-client.yaml
 sed -i "s/REPLACE_ZONE/${ZONE}/g" expanded-deployed-config-client.yaml
 sed -i "s/REPLACE_NETWORK_INTERNAL/${NETWORKS["internal"]}/g expanded-deployed-config-client.yaml
 
-read -p "What do you want your deployment name for the client to be? " DEPLOYMENT_NAME
-DEPLOYMENT_NAME="${DEPLOYMENT_NAME,,}"
-# Check if the deployment exists
-gcloud deployment-manager deployments describe $DEPLOYMENT_NAME
 
-# $? is a special variable that holds the exit status of the last command executed
-if [ $? -eq 0 ]; then
-    # Deployment exists, so update it
-    echo "Deployment exists. Updating..."
-    gcloud deployment-manager deployments update $DEPLOYMENT_NAME --config=expanded-deployed-config-client.yaml
-else
-    gcloud deployment-manager deployments create $DEPLOYMENT_NAME --config=expanded-deployed-config-client.yaml
-fi
+gcloud deployment-manager deployments update $DEPLOYMENT_NAME --config=expanded-deployed-config-client.yaml
