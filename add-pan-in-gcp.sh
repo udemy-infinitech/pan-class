@@ -156,38 +156,32 @@ select IMAGE in $IMAGES; do
     fi
 done
 
-read -p "Should I use the default ssh public key under .ssh/id_rsa.pub? (yes/no) " CHOICE
+pub_files=( $(find . -maxdepth 1 -name "*.pub") )
 
-if [[ "$CHOICE" == "yes" ]]; then
-    # Check if the default public key exists
-    if [[ -f "$HOME/.ssh/id_rsa.pub" ]]; then
-        PUB_KEY=$(cat "$HOME/.ssh/id_rsa.pub" | sed 's/^ssh-rsa //')
-        echo "Using the default public key:"
-        echo "$PUB_KEY"
+if [[ ${#pub_files[@]} -eq 0 ]]; then
+    # No .pub files found
+    read -p "No public key found in the current directory. Would you like to generate one? (y/n) " response
+
+    if [[ $response == "y" ]]; then
+        # Generate new SSH key
+        ssh-keygen -t rsa -f id_rsa
+
+        # Set keyfile_path to the newly created private key
+        keyfile_path="./id_rsa"
     else
-        echo "The default public key doesn't exist!"
+        echo "Exiting since no key was provided."
         exit 1
     fi
-elif [[ "$CHOICE" == "no" ]]; then
-    read -p "Please paste the public key you want to use: this requires you to copy everything after the ssh-rsa[space] make sure you remove the space - Enter Public Key" PUB_KEY
-    echo "You provided the following public key:"
-    echo "$PUB_KEY"
 else
-    echo "Invalid choice!"
-    exit 1
+    # Use the first found .pub file's corresponding private key
+    PUB_KEY=$(cat "./id_rsa.pub" | sed 's/^ssh-rsa //')
 fi
-
 
 read -p "What do you want the device name to be? " DEVICE_NAME
 DEVICE_NAME="${DEVICE_NAME,,}"
 echo "You have chosen '$DEVICE_NAME' as the device name."
 
-key_content=$(cat ~/.ssh/id_rsa.pub | sed 's/ssh-rsa //')
-gcloud compute instances list --filter="name=${INSTANCE_NAME} region:us-central1" '--format=value(zone)'  2> $error_output &
-    pid=$!
-    show_spinner $pid
-    wait $pid
-    check_error $?
+
 
 # Fetch zones from the specified region
 ZONES=$(gcloud compute zones list --filter="region:( $region )" --format="value(name)")
@@ -264,4 +258,8 @@ done
 echo "Waiting for 5 minutes until the instance is fully provisioned, you can go grab a coffee, time for a break"
 sleep 360
 ssh-keygen -f ~/.ssh/known_hosts -R "${PUBLIC_IP}"
-ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o StrictHostKeyChecking=accept-new -o HostKeyAlgorithms=ssh-rsa,ssh-ed25519 admin@${PUBLIC_IP}
+
+
+# Connect to the server using the local keyfile
+ssh -i ./id_rsa -o StrictHostKeyChecking=no -o StrictHostKeyChecking=accept-new -o HostKeyAlgorithms=ssh-rsa,ssh-ed25519 admin@${PUBLIC_IP}
+
